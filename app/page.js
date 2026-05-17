@@ -7,7 +7,7 @@ export default function Home() {
       
       <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
         
-        <a href="/app.html" style={cardStyle}>
+        <a href="/consumidor" style={cardStyle}>
           <h2 style={{ color: '#E8451A', fontSize: '1.5rem', marginBottom: '10px' }}>📱 App Usuário</h2>
           <p style={{ color: '#A8A49C', fontSize: '0.9rem' }}>Tinder da Comida e Pedidos</p>
         </a>
