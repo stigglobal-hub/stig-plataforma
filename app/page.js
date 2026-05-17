@@ -29,7 +29,7 @@ export default function Home() {
         </a>
 
         {/* Botão Painel do Restaurante */}
-        <a href="/parceiro.html" style={cardStyle}>
+        <a href="/parceiro" style={cardStyle}>
           <h2 style={{ color: '#E8451A', fontSize: '1.5rem', marginBottom: '10px' }}>🍽️ App Restaurante</h2>
           <p style={{ color: '#A8A49C', fontSize: '0.9rem' }}>Dashboard e Cardápio</p>
         </a>
