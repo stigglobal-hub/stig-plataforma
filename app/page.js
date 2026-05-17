@@ -5,12 +5,21 @@ export default function Home() {
       <h1 style={{ fontSize: '3rem', fontWeight: '900', color: '#E8451A', marginBottom: '10px' }}>STIG</h1>
       <p style={{ color: '#A8A49C', marginBottom: '40px', textAlign: 'center' }}>Acesse os protótipos do ecossistema:</p>
       
+
       <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
-        
+
+
+        {/* Botão painel adm*/}
+        <a href="/admin.html" style={cardStyle}>
+          <h2 style={{ color: '#E8451A', fontSize: '1.5rem', marginBottom: '10px' }}> App Administração</h2>
+          <p style={{ color: '#A8A49C', fontSize: '0.9rem' }}>Administração do sistema</p>
+        </a>
+
+
         {/* Botão App do Usuário */}
         <a href="/app.html" style={cardStyle}>
           <h2 style={{ color: '#E8451A', fontSize: '1.5rem', marginBottom: '10px' }}>📱 App Usuário</h2>
-          <p style={{ color: '#A8A49C', fontSize: '0.9rem' }}>Tinder da Comida & Pedidos</p>
+          <p style={{ color: '#A8A49C', fontSize: '0.9rem' }}>Comida & Pedidos</p>
         </a>
 
         {/* Botão App do Entregador */}
