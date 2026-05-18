@@ -717,5 +717,49 @@ function renderConq(){
     `${elig50?'✅':'⬜'} 50 entregas/mês<br>${eligP?'✅':'⬜'} mensalidade em dia<br>✅ constância mensal<br>✅ vistoria do veículo válida`;
 }
 </script>
+<!-- INJEÇÃO SUPABASE: MOTOBOY -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const _supa = supabase.createClient('https://kkflzxpwnpnhdhghgsph.supabase.co', 'sb_publishable_DYXRtVLjF0CgFvCaa9VHTg_OVZIi3YB');
+  let idPedidoAtual = null;
+
+  async function buscarPedidosDoBanco() {
+    // Busca pedidos marcados como "pronto" (aguardando motoboy)
+    const { data: ords } = await _supa.from('stig_orders').select('*').in('status', ['prep', 'pronto']);
+    
+    if(ords && ords.length > 0) {
+      const o = ords[0]; // Pega o mais recente
+      idPedidoAtual = o.id;
+      
+      // Injeta na sua UI de "Nova Corrida"
+      $('nova-corrida-box').innerHTML=`
+        <div class="corrida-card corrida-nova" style="margin-bottom:12px;">
+          <div style="text-align:center;margin-bottom:10px;">
+            <div style="background:var(--or);color:#fff;font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;">🔔 NOVA CORRIDA</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+            <div><div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--ink);">${o.emoji} ${o.prato_nome}</div><div style="font-size:10px;color:var(--ink3);">Restaurante: ${o.restaurante_nome}</div></div>
+            <div style="text-align:right;"><div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--gr);">R$8.50</div><div style="font-size:9px;color:var(--ink3);">seu frete</div></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="recusar()" style="flex:1;background:transparent;color:var(--rd);border:.5px solid var(--rd-b);border-radius:12px;padding:11px;font-size:12px;font-weight:600;cursor:pointer;">✕ recusar</button>
+            <button onclick="aceitarReal(${8.50})" style="flex:1;background:var(--gr);color:#fff;border:none;border-radius:12px;padding:11px;font-size:12px;font-weight:700;cursor:pointer;">✓ aceitar</button>
+          </div>
+        </div>`;
+    }
+  }
+
+  // Substitui o botão de simular corrida
+  window.simCorrida = buscarPedidosDoBanco;
+
+  window.aceitarReal = async function(frete) {
+    if(idPedidoAtual) {
+      // Atualiza o banco dizendo que o motoboy pegou
+      await _supa.from('stig_orders').update({ status: 'entrega' }).eq('id', idPedidoAtual);
+    }
+    window.aceitar(frete); // Roda o seu fluxo de código de 4 dígitos
+  };
+</script>
+  
 </body>
 </html>
