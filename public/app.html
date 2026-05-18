@@ -1516,5 +1516,40 @@ function garantiaReport(tipo){
 document.querySelectorAll('.modal-bg').forEach(bg=>bg.addEventListener('click',e=>{if(e.target===bg)bg.classList.remove('open')}));
 // init stars
 </script>
+
+  <!-- INJEÇÃO SUPABASE: CONSUMIDOR -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const _supa = supabase.createClient('https://kkflzxpwnpnhdhghgsph.supabase.co', 'sb_publishable_DYXRtVLjF0CgFvCaa9VHTg_OVZIi3YB');
+
+  async function carregarPratosReais() {
+    const { data: menu } = await _supa.from('stig_menu').select('*');
+    if(menu && menu.length > 0) {
+      // Transforma os pratos do banco no formato que seu Swipe espera
+      const pratosReais = menu.map(m => ({
+        id: m.id, name: m.nome, cat: m.cat, emoji: m.emoji, img: m.img, 
+        match: Math.floor(85 + Math.random() * 14), price: m.preco, dist: '1.2 km', 
+        time: '20 min', rating: 4.8, eco: true, tags: ['preço balcão']
+      }));
+      RESTAURANTS.length = 0; // Limpa os mocks
+      RESTAURANTS.push(...pratosReais);
+      if(typeof renderHome === 'function') renderHome();
+    }
+  }
+  setTimeout(carregarPratosReais, 500);
+
+  // Intercepta o "Like" para salvar o pedido no banco
+  const _doYesOriginal = window.doYes;
+  window.doYes = async function(r) {
+    _doYesOriginal(r); // Roda a sua animação visual original
+    
+    // Salva no Supabase
+    const hora = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    await _supa.from('stig_orders').insert([{
+      prato_nome: r.name, preco: r.price, emoji: r.emoji, img: r.img, 
+      restaurante_nome: r.cat, status: 'novo', time: hora
+    }]);
+  };
+</script>
 </body>
 </html>
