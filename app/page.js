@@ -12,7 +12,7 @@ export default function Home() {
           <p style={{ color: '#A8A49C', fontSize: '0.9rem' }}>Tinder da Comida e Pedidos</p>
         </a>
 
-        <a href="/moto.html" style={cardStyle}>
+        <a href="/moto" style={cardStyle}>
           <h2 style={{ color: '#E8451A', fontSize: '1.5rem', marginBottom: '10px' }}>🛵 App Entregador</h2>
           <p style={{ color: '#A8A49C', fontSize: '0.9rem' }}>Logística e Pit Stops</p>
         </a>
