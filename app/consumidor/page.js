@@ -24,15 +24,34 @@ export default function AppConsumidor() {
     setTimeout(() => setToast(''), 3000);
   }
 
-  function handleSwipe(like) {
+  async function handleSwipe(like) {
     const pratoAtual = pratos[currentIndex];
     
     if (like) {
       setCarrinho([...carrinho, pratoAtual]);
-      mostrarToast(`♥ Match! ${pratoAtual.nome} no carrinho!`);
+      mostrarToast(`♥ Match! Pedido enviado para cozinha!`);
+
+      // Envia o pedido para a tabela 'orders' no Supabase
+      const { error } = await supabase.from('orders').insert([
+        { 
+          prato_nome: pratoAtual.nome, 
+          preco: pratoAtual.preco, 
+          emoji: pratoAtual.emoji 
+        }
+      ]);
+      
+      if (error) console.error("Erro ao gerar pedido", error);
+
     } else {
       mostrarToast(`✕ Passou ${pratoAtual.nome}`);
     }
+
+    if (currentIndex < pratos.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    } else {
+      mostrarToast('Você viu todos os pratos de hoje! 🚀');
+    }
+  }
 
     // Passa para o próximo prato
     if (currentIndex < pratos.length - 1) {
