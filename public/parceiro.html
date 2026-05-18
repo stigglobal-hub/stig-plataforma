@@ -508,5 +508,47 @@ function toggleRestStatus(el){
 }
 renderOrders();
 </script>
+  <!-- INJEÇÃO SUPABASE: RESTAURANTE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const _supa = supabase.createClient('https://kkflzxpwnpnhdhghgsph.supabase.co', 'sb_publishable_DYXRtVLjF0CgFvCaa9VHTg_OVZIi3YB');
+
+  // Sobrescreve o carregamento inicial
+  async function carregarBanco() {
+    const { data: menu } = await _supa.from('stig_menu').select('*').order('created_at', { ascending: false });
+    if(menu) menuItems = menu.map(i => ({...i, on: true}));
+    renderMenu(); renderCPQ();
+
+    const { data: ords } = await _supa.from('stig_orders').select('*').order('created_at', { ascending: false });
+    if(ords) {
+      orders = ords.map(o => ({ id: o.order_number, items: '1x '+o.prato_nome, val: o.preco, status: o.status, time: o.time, db_id: o.id }));
+      totalFat = orders.reduce((acc, o) => acc + parseFloat(o.val), 0);
+    }
+    renderOrders(); renderDash();
+  }
+  setTimeout(carregarBanco, 500); // Aguarda o HTML carregar
+
+  // Sobrescreve a função de Adicionar Prato
+  window.addCadItem = async function() {
+    const nome=$('ci-nome').value.trim(), preco=parseFloat($('ci-preco').value)||0, emoji=$('ci-emoji').value||'🍽️', cat=$('ci-cat').value;
+    if(!nome) { showToast('⚠️ informe o nome'); return; }
+    
+    showToast('⏳ Salvando no banco...');
+    await _supa.from('stig_menu').insert([{ nome, preco, emoji, cat, restaurante_nome: cadData.nome || 'Meu Restaurante' }]);
+    
+    $('ci-nome').value=''; $('ci-preco').value=''; showToast('✅ Prato salvo!');
+    carregarBanco();
+  };
+
+  // Sobrescreve o avanço do pedido
+  window.advance = async function(id) {
+    const o = orders.find(x => x.id === id);
+    if(!o || !STATUS_FLOW[o.status]) return;
+    const nextStatus = STATUS_FLOW[o.status];
+    await _supa.from('stig_orders').update({ status: nextStatus }).eq('id', o.db_id);
+    showToast('✅ Status atualizado no banco!');
+    carregarBanco();
+  };
+</script>
 </body>
 </html>
