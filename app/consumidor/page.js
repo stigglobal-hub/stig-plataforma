@@ -8,7 +8,6 @@ export default function AppConsumidor() {
   const [carrinho, setCarrinho] = useState([]);
   const [toast, setToast] = useState('');
 
-  // Busca os pratos cadastrados pelos restaurantes no Supabase
   useEffect(() => {
     async function fetchPratos() {
       const { data, error } = await supabase.from('menu_items').select('*').order('created_at', { ascending: false });
@@ -31,12 +30,13 @@ export default function AppConsumidor() {
       setCarrinho([...carrinho, pratoAtual]);
       mostrarToast(`♥ Match! Pedido enviado para cozinha!`);
 
-      // Envia o pedido para a tabela 'orders' no Supabase
+      // 🚀 SALVANDO NO BANCO DE DADOS AQUI
       const { error } = await supabase.from('orders').insert([
         { 
           prato_nome: pratoAtual.nome, 
           preco: pratoAtual.preco, 
-          emoji: pratoAtual.emoji 
+          emoji: pratoAtual.emoji,
+          status: 'PREPARANDO'
         }
       ]);
       
@@ -53,15 +53,6 @@ export default function AppConsumidor() {
     }
   }
 
-    // Passa para o próximo prato
-    if (currentIndex < pratos.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      mostrarToast('Você viu todos os pratos de hoje! 🚀');
-    }
-  }
-
-  // Se o banco estiver vazio
   if (pratos.length === 0) {
     return (
       <div style={{ backgroundColor: '#000', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#fff', fontFamily: "'Sora', sans-serif" }}>
@@ -76,7 +67,6 @@ export default function AppConsumidor() {
   }
 
   const prato = pratos[currentIndex];
-  // Simulando o preço do concorrente (22% a mais)
   const precoIfood = (prato.preco * 1.22).toFixed(2);
   const economia = (precoIfood - prato.preco).toFixed(2);
 
@@ -85,7 +75,6 @@ export default function AppConsumidor() {
       
       <div style={shellStyle}>
         
-        {/* TOAST NOTIFICATION */}
         {toast && (
           <div style={{ position: 'absolute', top: '50px', left: '50%', transform: 'translateX(-50%)', background: '#22C55E', color: '#000', padding: '10px 20px', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', zIndex: 999, whiteSpace: 'nowrap' }}>
             {toast}
@@ -97,7 +86,6 @@ export default function AppConsumidor() {
           <div style={{ fontSize: '11px', color: '#A8A49C' }}>🛒 {carrinho.length} itens (R$ {carrinho.reduce((a, b) => a + parseFloat(b.preco), 0).toFixed(2)})</div>
         </div>
 
-        {/* CARTÃO DE COMIDA (TINDER) */}
         <div style={{ margin: '0 20px', position: 'relative', height: '480px' }}>
           <div style={{ position: 'absolute', inset: 0, background: '#1E1E1E', borderRadius: '22px', border: '1px solid rgba(255,255,255,0.11)', overflow: 'hidden', boxShadow: '0 16px 48px rgba(0,0,0,0.5)' }}>
             
@@ -111,7 +99,6 @@ export default function AppConsumidor() {
             <div style={{ padding: '20px' }}>
               <div style={{ fontSize: '24px', fontWeight: '800', color: '#fff', marginBottom: '8px' }}>{prato.nome}</div>
               
-              {/* COMPARATIVO DE PREÇO (O CORAÇÃO DO SEU NEGÓCIO) */}
               <div style={{ marginTop: '15px' }}>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '10px', padding: '6px 12px' }}>
                   <span style={{ fontSize: '20px', fontWeight: '900', color: '#22C55E' }}>R$ {parseFloat(prato.preco).toFixed(2)}</span>
@@ -128,7 +115,6 @@ export default function AppConsumidor() {
           </div>
         </div>
 
-        {/* BOTÕES DE SWIPE */}
         <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '20px', padding: '0 20px' }}>
           <button onClick={() => handleSwipe(false)} style={{ width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', cursor: 'pointer', background: 'rgba(239,68,68,0.1)', color: '#EF4444', border: '2px solid rgba(239,68,68,0.3)' }}>✕</button>
           
@@ -140,7 +126,6 @@ export default function AppConsumidor() {
   );
 }
 
-// Estilo do celular
 const shellStyle = {
   width: '390px', height: '844px', background: '#121212', borderRadius: '44px', 
   border: '1.5px solid rgba(255,255,255,0.12)', overflow: 'hidden', position: 'relative', 
